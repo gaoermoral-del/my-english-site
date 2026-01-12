@@ -3,40 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sweet English - 甜美系英文學習</title>
+    <title>Sweet English - 生活實踐站</title>
     <style>
         :root {
             --bg-color: #fff5f7;
-            --card-bg: #ffffff;
             --primary-pink: #ffb7c5;
             --soft-purple: #e2d1f9;
-            --text-main: #5d5d5d;
-            --success: #b2e2f2;
+            --text-main: #4a4a4a;
         }
 
         body {
             font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            padding-bottom: 50px;
         }
 
         /* 導覽列 */
         nav {
-            margin-top: 20px;
+            background: white;
+            width: 100%;
+            padding: 15px 0;
             display: flex;
-            gap: 10px;
+            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         nav button {
-            background: white;
+            background: none;
             border: 2px solid var(--primary-pink);
             color: var(--primary-pink);
-            padding: 8px 20px;
+            padding: 8px 15px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
@@ -47,224 +51,261 @@
             color: white;
         }
 
-        header h1 {
-            color: #ff8fa3;
-            margin-bottom: 5px;
-        }
-
-        /* 學習卡片區 */
         .container {
-            max-width: 450px;
+            max-width: 500px;
             width: 90%;
             margin-top: 30px;
-            text-align: center;
         }
 
         .card {
-            background: var(--card-bg);
+            background: white;
             border-radius: 30px;
-            padding: 50px 20px;
-            box-shadow: 0 15px 35px rgba(255, 183, 197, 0.2);
-            transition: 0.3s;
-            position: relative;
-        }
-
-        .word-en {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: #ff8fa3;
-            margin-bottom: 10px;
-        }
-
-        .word-cn {
-            font-size: 1.8rem;
-            color: #a0a0a0;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 183, 197, 0.2);
             margin-bottom: 20px;
         }
 
-        /* 發音按鈕 */
+        .word-en { font-size: 3rem; font-weight: 800; color: #ff8fa3; }
+        .word-cn { font-size: 1.5rem; color: #888; margin: 10px 0 20px; }
+
+        /* 實境模擬樣式 */
+        .scenario-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            border-left: 10px solid var(--soft-purple);
+        }
+
+        .dialogue {
+            margin: 15px 0;
+            padding: 10px;
+            background: #fdfbff;
+            border-radius: 10px;
+        }
+
+        .speaker { font-weight: bold; color: #9b59b6; }
+
         .audio-btn {
             background: var(--soft-purple);
             border: none;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
             color: white;
-            box-shadow: 0 5px 15px rgba(226, 209, 249, 0.6);
-            transition: 0.2s;
-        }
-
-        .audio-btn:hover { transform: scale(1.1); }
-
-        /* 測驗區 */
-        #quiz-section { display: none; }
-
-        .quiz-question {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-
-        .options-grid {
-            display: grid;
-            gap: 15px;
-        }
-
-        .option-btn {
-            background: white;
-            border: 2px solid var(--soft-purple);
-            padding: 15px;
-            border-radius: 15px;
             cursor: pointer;
-            font-size: 1.1rem;
-            transition: 0.2s;
+            font-size: 1.2rem;
         }
 
-        .option-btn:hover { background: var(--soft-purple); color: white; }
-
-        .controls {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .nav-btn {
-            background: var(--primary-pink);
-            border: none;
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>🌸 Sweet English</h1>
-    <p>溫柔地陪伴你學好英文</p>
-</header>
-
 <nav>
-    <button id="learn-tab" class="active" onclick="showSection('learn')">單字學習</button>
-    <button id="quiz-tab" onclick="showSection('quiz')">挑戰小遊戲</button>
+    <button id="btn-learn" class="active" onclick="switchMode('learn')">單字庫</button>
+    <button id="btn-scenario" onclick="switchMode('scenario')">實境模擬</button>
 </nav>
 
-<div id="learn-section" class="container">
+<div id="section-learn" class="container">
     <div class="card">
-        <div class="word-en" id="enText">Loading...</div>
-        <div class="word-cn" id="cnText">載入中...</div>
-        <button class="audio-btn" onclick="speakWord()">🔊</button>
+        <div id="category-tag" style="color: #ffb7c5; font-weight: bold;">[日常物品]</div>
+        <div class="word-en" id="en-text">Loading...</div>
+        <div class="word-cn" id="cn-text">載入中...</div>
+        <button class="audio-btn" onclick="speakText(document.getElementById('en-text').innerText)">🔊</button>
     </div>
-    
-    <div class="controls">
-        <button class="nav-btn" onclick="prevWord()">上一個</button>
-        <button class="nav-btn" onclick="nextWord()">下一個</button>
+    <div style="display: flex; justify-content: space-between;">
+        <button onclick="prevWord()" style="padding: 10px 20px; border-radius: 20px; border: 1px solid #ccc; cursor: pointer;">← 上一個</button>
+        <button onclick="nextWord()" style="padding: 10px 20px; border-radius: 20px; background: #ffb7c5; color: white; border: none; cursor: pointer;">下一個 →</button>
     </div>
 </div>
 
-<div id="quiz-section" class="container">
-    <div class="card">
-        <div class="quiz-question" id="quiz-q">這個單字的意思是？</div>
-        <div class="word-en" style="font-size: 2.5rem;" id="quiz-word">Word</div>
-        <div class="options-grid" id="options">
-            </div>
+<div id="section-scenario" class="container hidden">
+    <div class="scenario-box">
+        <h3>☕ 實境：在咖啡廳點餐</h3>
+        <p style="color: #666; font-size: 0.9rem;">練習如何用英文買杯咖啡吧！</p>
+        <hr border="0" style="border-top: 1px solid #eee;">
+        
+        <div class="dialogue">
+            <p><span class="speaker">Clerk:</span> Hello! What can I get for you?</p>
+            <p style="color: #999; font-size: 0.8rem;">(你好！想點些什麼？)</p>
+            <button onclick="speakText('Hello! What can I get for you?')">🔊</button>
+        </div>
+
+        <div class="dialogue" style="background: #fff5f7;">
+            <p><span class="speaker">You:</span> I'd like a medium Latte, please.</p>
+            <p style="color: #999; font-size: 0.8rem;">(我想要一杯中杯拿鐵，謝謝。)</p>
+            <button onclick="speakText('I\'d like a medium Latte, please.')">🔊</button>
+        </div>
+
+        <div class="dialogue">
+            <p><span class="speaker">Clerk:</span> For here or to go?</p>
+            <p style="color: #999; font-size: 0.8rem;">(內用還是外帶？)</p>
+            <button onclick="speakText('For here or to go?')">🔊</button>
+        </div>
     </div>
 </div>
 
 <script>
+    // 擴充單字庫範例 (你可以繼續往這裡增加，直到 1000 個)
     const vocabulary = [
-        {en: "Sunshine", cn: "陽光"},
-        {en: "Butterfly", cn: "蝴蝶"},
-        {en: "Chocolate", cn: "巧克力"},
-        {en: "Beautiful", cn: "美麗的"},
-        {en: "Rainbow", cn: "彩虹"},
-        {en: "Friendship", cn: "友誼"},
-        {en: "Breeze", cn: "微風"}
+        {en: "Refrigerator", cn: "冰箱", cat: "家電"},
+        {en: "Delicious", cn: "美味的", cat: "形容詞"},
+        {en: "Appointment", cn: "預約/約會", cat: "商務日常"},
+        {en: "Commute", cn: "通勤", cat: "生活動作"},
+        {en: "Vegetable", cn: "蔬菜", cat: "食物"},
+        {en: "Pharmacy", cn: "藥局", cat: "地點"},
+        {en: "Emergency", cn: "緊急狀況", cat: "生活"},
+        {en: "Comfortable", cn: "舒適的", cat: "形容詞"},
+        {en: "Recommend", cn: "推薦", cat: "動作"},
+        {en: "Discount", cn: "折扣", cat: "購物"}
+        // --- 數字與時間 (1-10) ---
+        {en: "Morning", cn: "早上", cat: "時間"},
+        {en: "Afternoon", cn: "下午", cat: "時間"},
+        {en: "Evening", cn: "傍晚/晚上", cat: "時間"},
+        {en: "Today", cn: "今天", cat: "時間"},
+        {en: "Tomorrow", cn: "明天", cat: "時間"},
+        {en: "Calendar", cn: "日曆", cat: "時間"},
+        {en: "Minute", cn: "分鐘", cat: "時間"},
+        {en: "Quarter", cn: "十五分鐘/四分之一", cat: "時間"},
+        {en: "Weekend", cn: "週末", cat: "時間"},
+        {en: "Holiday", cn: "假期", cat: "時間"},
+        // --- 情緒與個人 (11-25) ---
+        {en: "Happy", cn: "快樂的", cat: "情緒"},
+        {en: "Excited", cn: "興奮的", cat: "情緒"},
+        {en: "Nervous", cn: "緊張的", cat: "情緒"},
+        {en: "Hungry", cn: "餓的", cat: "感覺"},
+        {en: "Thirsty", cn: "渴的", cat: "感覺"},
+        {en: "Sleepy", cn: "想睡的", cat: "感覺"},
+        {en: "Beautiful", cn: "美麗的", cat: "形容詞"},
+        {en: "Kind", cn: "仁慈的/親切的", cat: "形容詞"},
+        {en: "Brave", cn: "勇敢的", cat: "形容詞"},
+        {en: "Smart", cn: "聰明的", cat: "形容詞"},
+        {en: "Friendly", cn: "友好的", cat: "形容詞"},
+        {en: "Tired", cn: "疲累的", cat: "感覺"},
+        {en: "Angry", cn: "生氣的", cat: "情緒"},
+        {en: "Patient", cn: "有耐心的", cat: "形容詞"},
+        {en: "Honest", cn: "誠實的", cat: "形容詞"},
+        // --- 食物與飲品 (26-45) ---
+        {en: "Breakfast", cn: "早餐", cat: "食物"},
+        {en: "Delicious", cn: "美味的", cat: "食物"},
+        {en: "Vegetable", cn: "蔬菜", cat: "食物"},
+        {en: "Chocolate", cn: "巧克力", cat: "食物"},
+        {en: "Beverage", cn: "飲料", cat: "食物"},
+        {en: "Ingredient", cn: "食材/配料", cat: "食物"},
+        {en: "Recipe", cn: "食譜", cat: "食物"},
+        {en: "Menu", cn: "菜單", cat: "食物"},
+        {en: "Spicy", cn: "辣的", cat: "味道"},
+        {en: "Sweet", cn: "甜的", cat: "味道"},
+        {en: "Sour", cn: "酸的", cat: "味道"},
+        {en: "Bitter", cn: "苦的", cat: "味道"},
+        {en: "Salt", cn: "鹽", cat: "食物"},
+        {en: "Sugar", cn: "糖", cat: "食物"},
+        {en: "Snack", cn: "零食", cat: "食物"},
+        {en: "Buffet", cn: "自助餐", cat: "食物"},
+        {en: "Utensil", cn: "餐具", cat: "居家"},
+        {en: "Napkin", cn: "餐巾紙", cat: "居家"},
+        {en: "Coffee", cn: "咖啡", cat: "食物"},
+        {en: "Fruit", cn: "水果", cat: "食物"},
+        // --- 居家與家電 (46-65) ---
+        {en: "Refrigerator", cn: "冰箱", cat: "家電"},
+        {en: "Television", cn: "電視", cat: "家電"},
+        {en: "Blanket", cn: "毯子", cat: "居家"},
+        {en: "Pillow", cn: "枕頭", cat: "居家"},
+        {en: "Mirror", cn: "鏡子", cat: "居家"},
+        {en: "Laundry", cn: "洗衣物", cat: "家務"},
+        {en: "Furniture", cn: "家具", cat: "居家"},
+        {en: "Balcony", cn: "陽台", cat: "建築"},
+        {en: "Curtain", cn: "窗簾", cat: "居家"},
+        {en: "Sofa", cn: "沙發", cat: "居家"},
+        {en: "Kitchen", cn: "廚房", cat: "建築"},
+        {en: "Bathroom", cn: "浴室", cat: "建築"},
+        {en: "Towel", cn: "毛巾", cat: "居家"},
+        {en: "Shampoo", cn: "洗髮精", cat: "居家"},
+        {en: "Toothbrush", cn: "牙刷", cat: "居家"},
+        {en: "Cabinet", cn: "櫃子", cat: "居家"},
+        {en: "Closet", cn: "衣櫥", cat: "居家"},
+        {en: "Window", cn: "窗戶", cat: "居家"},
+        {en: "Computer", cn: "電腦", cat: "家電"},
+        {en: "Smartphone", cn: "智慧型手機", cat: "家電"},
+        // --- 日常動作與社交 (66-85) ---
+        {en: "Understand", cn: "理解", cat: "動作"},
+        {en: "Recommend", cn: "推薦", cat: "動作"},
+        {en: "Appointment", cn: "預約/約會", cat: "社交"},
+        {en: "Commute", cn: "通勤", cat: "動作"},
+        {en: "Exercise", cn: "運動", cat: "動作"},
+        {en: "Introduce", cn: "介紹", cat: "社交"},
+        {en: "Listen", cn: "聽", cat: "動作"},
+        {en: "Speak", cn: "說", cat: "動作"},
+        {en: "Write", cn: "寫", cat: "動作"},
+        {en: "Laugh", cn: "笑", cat: "動作"},
+        {en: "Purchase", cn: "購買", cat: "動作"},
+        {en: "Discover", cn: "發現", cat: "動作"},
+        {en: "Prepare", cn: "準備", cat: "動作"},
+        {en: "Remember", cn: "記得", cat: "動作"},
+        {en: "Celebrate", cn: "慶祝", cat: "社交"},
+        {en: "Invite", cn: "邀請", cat: "社交"},
+        {en: "Borrow", cn: "借入", cat: "動作"},
+        {en: "Return", cn: "歸還", cat: "動作"},
+        {en: "Travel", cn: "旅行", cat: "動作"},
+        {en: "Explore", cn: "探索", cat: "動作"},
+        // --- 交通與場所 (86-100) ---
+        {en: "Airport", cn: "機場", cat: "場所"},
+        {en: "Pharmacy", cn: "藥局", cat: "場所"},
+        {en: "Hospital", cn: "醫院", cat: "場所"},
+        {en: "Station", cn: "車站", cat: "場所"},
+        {en: "Entrance", cn: "入口", cat: "場所"},
+        {en: "Exit", cn: "出口", cat: "場所"},
+        {en: "Emergency", cn: "緊急狀況", cat: "生活"},
+        {en: "Direction", cn: "方向", cat: "旅行"},
+        {en: "Map", cn: "地圖", cat: "旅行"},
+        {en: "Passport", cn: "護照", cat: "旅行"},
+        {en: "Baggage", cn: "行李", cat: "旅行"},
+        {en: "Ticket", cn: "票券", cat: "旅行"},
+        {en: "Discount", cn: "折扣", cat: "購物"},
+        {en: "Receipt", cn: "收據", cat: "購物"},
+        {en: "Cashier", cn: "收銀員", cat: "場所"}
+        // ...這裡可以持續增加單字
     ];
 
     let currentIndex = 0;
 
-    // --- 核心功能：切換分頁 ---
-    function showSection(type) {
-        document.getElementById('learn-section').style.display = (type === 'learn') ? 'block' : 'none';
-        document.getElementById('quiz-section').style.display = (type === 'quiz') ? 'block' : 'none';
-        document.getElementById('learn-tab').classList.toggle('active', type === 'learn');
-        document.getElementById('quiz-tab').classList.toggle('active', type === 'quiz');
-        if(type === 'quiz') initQuiz();
+    function switchMode(mode) {
+        document.getElementById('section-learn').classList.toggle('hidden', mode !== 'learn');
+        document.getElementById('section-scenario').classList.toggle('hidden', mode !== 'scenario');
+        document.getElementById('btn-learn').classList.toggle('active', mode === 'learn');
+        document.getElementById('btn-scenario').classList.toggle('active', mode === 'scenario');
     }
 
-    // --- 核心功能：甜美發音 ---
-    function speakWord() {
-        const text = vocabulary[currentIndex].en;
-        const msg = new SpeechSynthesisUtterance();
-        msg.text = text;
-        msg.lang = 'en-US';
-        
-        // 尋找女性聲音
-        const voices = window.speechSynthesis.getVoices();
-        const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha'));
-        if (femaleVoice) msg.voice = femaleVoice;
-
-        msg.pitch = 1.2; // 提高音調（比較甜美）
-        msg.rate = 0.9;  // 稍微慢一點點
-        window.speechSynthesis.speak(msg);
-    }
-
-    // --- 學習模式邏輯 ---
-    function updateLearnCard() {
-        document.getElementById('enText').innerText = vocabulary[currentIndex].en;
-        document.getElementById('cnText').innerText = vocabulary[currentIndex].cn;
+    function updateCard() {
+        const item = vocabulary[currentIndex];
+        document.getElementById('en-text').innerText = item.en;
+        document.getElementById('cn-text').innerText = item.cn;
+        document.getElementById('category-tag').innerText = `[${item.cat}]`;
     }
 
     function nextWord() {
         currentIndex = (currentIndex + 1) % vocabulary.length;
-        updateLearnCard();
+        updateCard();
     }
 
     function prevWord() {
         currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
-        updateLearnCard();
+        updateCard();
     }
 
-    // --- 測驗遊戲邏輯 ---
-    function initQuiz() {
-        const correct = vocabulary[Math.floor(Math.random() * vocabulary.length)];
-        document.getElementById('quiz-word').innerText = correct.en;
-        
-        // 隨機選三個錯誤答案
-        let choices = [correct.cn];
-        while(choices.length < 4) {
-            let randomCn = vocabulary[Math.floor(Math.random() * vocabulary.length)].cn;
-            if(!choices.includes(randomCn)) choices.push(randomCn);
-        }
-        choices.sort(() => Math.random() - 0.5); // 打亂順序
-
-        const optionsDiv = document.getElementById('options');
-        optionsDiv.innerHTML = '';
-        choices.forEach(choice => {
-            const btn = document.createElement('button');
-            btn.className = 'option-btn';
-            btn.innerText = choice;
-            btn.onclick = () => {
-                if(choice === correct.cn) {
-                    alert('好棒！答對了 ❤️');
-                    initQuiz();
-                } else {
-                    alert('差一點點，再試試看？');
-                }
-            };
-            optionsDiv.appendChild(btn);
-        });
+    function speakText(text) {
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = text;
+        msg.lang = 'en-US';
+        msg.pitch = 1.2; // 甜美女聲關鍵：調高音調
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
     }
 
-    // 初始化
-    window.speechSynthesis.onvoiceschanged = () => {}; // 預載入聲音
-    updateLearnCard();
+    // 初始化第一張卡片
+    updateCard();
 </script>
 
 </body>
 </html>
-
