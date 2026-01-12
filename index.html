@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet English - 甜美系英文學習</title>
+    <style>
+        :root {
+            --bg-color: #fff5f7;
+            --card-bg: #ffffff;
+            --primary-pink: #ffb7c5;
+            --soft-purple: #e2d1f9;
+            --text-main: #5d5d5d;
+            --success: #b2e2f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 導覽列 */
+        nav {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        nav button {
+            background: white;
+            border: 2px solid var(--primary-pink);
+            color: var(--primary-pink);
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        nav button.active {
+            background: var(--primary-pink);
+            color: white;
+        }
+
+        header h1 {
+            color: #ff8fa3;
+            margin-bottom: 5px;
+        }
+
+        /* 學習卡片區 */
+        .container {
+            max-width: 450px;
+            width: 90%;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 30px;
+            padding: 50px 20px;
+            box-shadow: 0 15px 35px rgba(255, 183, 197, 0.2);
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .word-en {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #ff8fa3;
+            margin-bottom: 10px;
+        }
+
+        .word-cn {
+            font-size: 1.8rem;
+            color: #a0a0a0;
+            margin-bottom: 20px;
+        }
+
+        /* 發音按鈕 */
+        .audio-btn {
+            background: var(--soft-purple);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            box-shadow: 0 5px 15px rgba(226, 209, 249, 0.6);
+            transition: 0.2s;
+        }
+
+        .audio-btn:hover { transform: scale(1.1); }
+
+        /* 測驗區 */
+        #quiz-section { display: none; }
+
+        .quiz-question {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 2px solid var(--soft-purple);
+            padding: 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: 0.2s;
+        }
+
+        .option-btn:hover { background: var(--soft-purple); color: white; }
+
+        .controls {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .nav-btn {
+            background: var(--primary-pink);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🌸 Sweet English</h1>
+    <p>溫柔地陪伴你學好英文</p>
+</header>
+
+<nav>
+    <button id="learn-tab" class="active" onclick="showSection('learn')">單字學習</button>
+    <button id="quiz-tab" onclick="showSection('quiz')">挑戰小遊戲</button>
+</nav>
+
+<div id="learn-section" class="container">
+    <div class="card">
+        <div class="word-en" id="enText">Loading...</div>
+        <div class="word-cn" id="cnText">載入中...</div>
+        <button class="audio-btn" onclick="speakWord()">🔊</button>
+    </div>
+    
+    <div class="controls">
+        <button class="nav-btn" onclick="prevWord()">上一個</button>
+        <button class="nav-btn" onclick="nextWord()">下一個</button>
+    </div>
+</div>
+
+<div id="quiz-section" class="container">
+    <div class="card">
+        <div class="quiz-question" id="quiz-q">這個單字的意思是？</div>
+        <div class="word-en" style="font-size: 2.5rem;" id="quiz-word">Word</div>
+        <div class="options-grid" id="options">
+            </div>
+    </div>
+</div>
+
+<script>
+    const vocabulary = [
+        {en: "Sunshine", cn: "陽光"},
+        {en: "Butterfly", cn: "蝴蝶"},
+        {en: "Chocolate", cn: "巧克力"},
+        {en: "Beautiful", cn: "美麗的"},
+        {en: "Rainbow", cn: "彩虹"},
+        {en: "Friendship", cn: "友誼"},
+        {en: "Breeze", cn: "微風"}
+    ];
+
+    let currentIndex = 0;
+
+    // --- 核心功能：切換分頁 ---
+    function showSection(type) {
+        document.getElementById('learn-section').style.display = (type === 'learn') ? 'block' : 'none';
+        document.getElementById('quiz-section').style.display = (type === 'quiz') ? 'block' : 'none';
+        document.getElementById('learn-tab').classList.toggle('active', type === 'learn');
+        document.getElementById('quiz-tab').classList.toggle('active', type === 'quiz');
+        if(type === 'quiz') initQuiz();
+    }
+
+    // --- 核心功能：甜美發音 ---
+    function speakWord() {
+        const text = vocabulary[currentIndex].en;
+        const msg = new SpeechSynthesisUtterance();
+        msg.text = text;
+        msg.lang = 'en-US';
+        
+        // 尋找女性聲音
+        const voices = window.speechSynthesis.getVoices();
+        const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Google US English') || v.name.includes('Samantha'));
+        if (femaleVoice) msg.voice = femaleVoice;
+
+        msg.pitch = 1.2; // 提高音調（比較甜美）
+        msg.rate = 0.9;  // 稍微慢一點點
+        window.speechSynthesis.speak(msg);
+    }
+
+    // --- 學習模式邏輯 ---
+    function updateLearnCard() {
+        document.getElementById('enText').innerText = vocabulary[currentIndex].en;
+        document.getElementById('cnText').innerText = vocabulary[currentIndex].cn;
+    }
+
+    function nextWord() {
+        currentIndex = (currentIndex + 1) % vocabulary.length;
+        updateLearnCard();
+    }
+
+    function prevWord() {
+        currentIndex = (currentIndex - 1 + vocabulary.length) % vocabulary.length;
+        updateLearnCard();
+    }
+
+    // --- 測驗遊戲邏輯 ---
+    function initQuiz() {
+        const correct = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+        document.getElementById('quiz-word').innerText = correct.en;
+        
+        // 隨機選三個錯誤答案
+        let choices = [correct.cn];
+        while(choices.length < 4) {
+            let randomCn = vocabulary[Math.floor(Math.random() * vocabulary.length)].cn;
+            if(!choices.includes(randomCn)) choices.push(randomCn);
+        }
+        choices.sort(() => Math.random() - 0.5); // 打亂順序
+
+        const optionsDiv = document.getElementById('options');
+        optionsDiv.innerHTML = '';
+        choices.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = choice;
+            btn.onclick = () => {
+                if(choice === correct.cn) {
+                    alert('好棒！答對了 ❤️');
+                    initQuiz();
+                } else {
+                    alert('差一點點，再試試看？');
+                }
+            };
+            optionsDiv.appendChild(btn);
+        });
+    }
+
+    // 初始化
+    window.speechSynthesis.onvoiceschanged = () => {}; // 預載入聲音
+    updateLearnCard();
+</script>
+
+</body>
+</html>
